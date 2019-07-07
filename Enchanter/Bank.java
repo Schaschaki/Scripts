@@ -13,7 +13,7 @@ public class Bank extends Task<ClientContext> {
 
     @Override
     public boolean activate() { //either no runes, no Items or bank open
-        if(!Properties.rightStaff) return false;
+        if(!Properties.rightStaff || ctx.magic.casting(Properties.SelectedItem.SELECTED_ITEM.spell)) return false;
         else return ctx.inventory.select().id(Properties.SelectedItem.SELECTED_ITEM.id()).isEmpty()
                     || ctx.inventory.select().id(Properties.cosmicRuneId).isEmpty()
                     || ctx.bank.opened();
