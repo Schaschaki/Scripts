@@ -19,7 +19,8 @@ public class Enchant extends Task<ClientContext> {
         if(!Properties.rightStaff) return false;
         else return !ctx.inventory.select().id(Properties.SelectedItem.SELECTED_ITEM.id()).isEmpty()
                     && !ctx.inventory.select().id(Properties.cosmicRuneId).isEmpty()
-                    && !ctx.bank.opened();
+                    && !ctx.bank.opened()
+                    || ctx.magic.casting(Properties.SelectedItem.SELECTED_ITEM.spell);
     }
 
     @Override
@@ -34,7 +35,8 @@ public class Enchant extends Task<ClientContext> {
         } else if(Game.Tab.MAGIC == ctx.game.tab() && !ctx.magic.casting(spell)){           //casting no spell && Magic Tab open
             ctx.magic.cast(spell);
             Condition.wait(() -> ctx.magic.casting(spell), random(80), 10);
-        } else if(Game.Tab.INVENTORY == ctx.game.tab() && ctx.magic.casting(spell)) {       //casting spell && Inventory Tab open
+        } else if(Game.Tab.INVENTORY == ctx.game.tab() && ctx.magic.casting(spell)
+                && !ctx.inventory.select().id(id).isEmpty()) {       //casting spell && Inventory Tab open && items to enchant in inv.
             ctx.inventory.select().id(id).poll().interact("Cast");
             Condition.wait(() -> ctx.game.tab() == Game.Tab.MAGIC);
             breathe(random(50));
